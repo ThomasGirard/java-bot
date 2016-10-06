@@ -33,14 +33,17 @@ public class BotLogic {
 	private final UserDb userDb;
 	
 	public BotLogic() throws Exception {
-		List<String> classNames = FileUtils.readLines(new File(Const.str("handlers.file")));
+		String userDbFile = Const.DATA_FILE;
+		Logging.log("Loading UserDb from " + userDbFile);
+		userDb = DataStoreUtils.fromFile(userDbFile);
+		DataStoreUtils.saveOnQuit(userDbFile, userDb);
 		
+		String handlersFile = Const.str("handlers.file");
+		List<String> classNames = FileUtils.readLines(new File(handlersFile));
+		Logging.log("Instantiating " + classNames.size() + " handlers from " + handlersFile + ".");
 		for(String className : classNames) {
 			instantiateHandler(className);
 		}
-		
-		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
-		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
 	}
 	
 	private void instantiateHandler(String className) {

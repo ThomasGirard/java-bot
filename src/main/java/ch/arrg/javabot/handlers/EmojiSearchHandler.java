@@ -49,7 +49,7 @@ public class EmojiSearchHandler implements CommandHandler {
 		List<SearchResult> srs = new ArrayList<>();
 		String fullUrl = SEARCH_URL + searchWords.replaceAll(" ", "+");
 		try {
-			Document document = Jsoup.connect(fullUrl).get();
+			Document document = Jsoup.connect(fullUrl).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").get();
 			
 			// Check if any results
 			Elements elemHeaders = document.select(".search-results h2");

@@ -6,12 +6,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 public class HtmlReaderHelper {
-	
+
 	public static BufferedReader openUrlForRead(String urlS) {
 		HttpURLConnection conn;
 		try {
@@ -23,9 +24,9 @@ public class HtmlReaderHelper {
 			Logging.logException(e);
 			return null;
 		}
-		
+
 	}
-	
+
 	public static String readTitle(String urlS) {
 		try {
 			Document document = Jsoup.connect(urlS).get();
@@ -33,10 +34,12 @@ public class HtmlReaderHelper {
 			if(elems.size() > 0) {
 				return elems.get(0).text();
 			}
+		} catch (HttpStatusException e) {
+			Logging.log("Got HTTP status code " + e.getStatusCode() + " for URL " + urlS);
 		} catch (IOException e) {
 			Logging.logException(e);
 		}
-
+		
 		return null;
 	}
 }

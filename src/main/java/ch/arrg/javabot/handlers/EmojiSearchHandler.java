@@ -15,12 +15,13 @@ import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.Logging;
 
 public class EmojiSearchHandler implements CommandHandler {
-	
+
+	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0";
 	private final static String SEARCH_URL = "http://emojipedia.org/search/?q=";
-	
+
 	@Override
 	public void handle(BotContext ctx) {
-		
+
 		CommandMatcher matcher = CommandMatcher.make("+emoji");
 		if(matcher.matches(ctx.message)) {
 			String searchWords = matcher.remaining();
@@ -28,7 +29,7 @@ public class EmojiSearchHandler implements CommandHandler {
 			reply(ctx, results);
 		}
 	}
-	
+
 	private void reply(BotContext ctx, List<SearchResult> results) {
 		if(results.isEmpty()) {
 			ctx.reply("No results found :sadface:");
@@ -44,13 +45,14 @@ public class EmojiSearchHandler implements CommandHandler {
 			ctx.reply(sb.toString());
 		}
 	}
-	
+
 	private List<SearchResult> search(String searchWords) {
 		List<SearchResult> srs = new ArrayList<>();
 		String fullUrl = SEARCH_URL + searchWords.replaceAll(" ", "+");
 		try {
-			Document document = Jsoup.connect(fullUrl).get();
-			
+			// TODO set a user agent for all Jsoup uses
+			Document document = Jsoup.connect(fullUrl).userAgent(USER_AGENT).get();
+
 			// Check if any results
 			Elements elemHeaders = document.select(".search-results h2");
 			if(elemHeaders.size() > 0) {
@@ -64,19 +66,19 @@ public class EmojiSearchHandler implements CommandHandler {
 		} catch (IOException e) {
 			Logging.logException(e);
 		}
-		
+
 		return srs;
 	}
-	
+
 	private static class SearchResult {
 		String emoji;
 	}
-	
+
 	@Override
 	public String getName() {
 		return "+emoji";
 	}
-	
+
 	@Override
 	public void help(BotContext ctx) {
 		ctx.reply("Search for an emoji by name +emoji <description>");

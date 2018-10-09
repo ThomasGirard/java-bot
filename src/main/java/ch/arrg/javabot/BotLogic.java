@@ -23,21 +23,22 @@ import ch.arrg.javabot.util.Logging;
 // TODO automatic summary of links ?
 // TODO images to ascii art
 // TODO random tweets
+// TODO new kind of Handler that can actively (not reactively) interact (e.g. for NuclearThrone)
 
 public class BotLogic {
-	
+
 	private Map<String, CommandHandler> handlers = new TreeMap<>();
 	private Set<CommandHandler> disabled = new HashSet<>();
 	private Map<String, IrcEventHandler> eventHandlers = new TreeMap<>();
-	
+
 	private final UserDb userDb;
-	
+
 	public BotLogic() throws Exception {
 		String userDbFile = Const.DATA_FILE;
 		Logging.log("Loading UserDb from " + userDbFile);
 		userDb = DataStoreUtils.fromFile(userDbFile);
 		DataStoreUtils.saveOnQuit(userDbFile, userDb);
-		
+
 		String handlersFile = Const.str("handlers.file");
 		List<String> classNames = FileUtils.readLines(new File(handlersFile));
 		Logging.log("Instantiating " + classNames.size() + " handlers from " + handlersFile + ".");
@@ -45,14 +46,14 @@ public class BotLogic {
 			instantiateHandler(className);
 		}
 	}
-	
+
 	private void instantiateHandler(String className) {
 		try {
 			Class<?> clazz = Class.forName(className);
 			Object newInstance = clazz.newInstance();
 			CommandHandler commandHandler = (CommandHandler) newInstance;
 			addHandler(commandHandler);
-			
+
 		} catch (ClassNotFoundException e) {
 			Logging.log("Couldn't not instantiate " + className + ": class not found.");
 			Logging.logException(e);
@@ -64,50 +65,50 @@ public class BotLogic {
 			Logging.logException(e);
 		}
 	}
-	
+
 	private void addHandler(CommandHandler h) {
 		handlers.put(h.getName(), h);
-		
+
 		if(h instanceof IrcEventHandler) {
 			eventHandlers.put(h.getName(), (IrcEventHandler) h);
 		}
 	}
-	
+
 	protected void onMessage(BotContext ctx) {
 		if(ctx.isPaused()) {
 			onMessagePauseMode(ctx);
 			return;
 		}
-		
+
 		String message = ctx.message.trim();
-		
+
 		if(message.startsWith(Const.str("bot.ignoredPattern"))) {
 			return;
 		}
-		
+
 		CommandMatcher matcher = CommandMatcher.make("+help");
 		if(matcher.matches(message)) {
 			onHelp(ctx, matcher.nextWord());
 			return;
 		}
-		
+
 		for(CommandHandler handler : handlers.values()) {
 			try {
 				if(disabled.contains(handler))
 					continue;
-				
+
 				handler.handle(ctx);
 			} catch (Exception e) {
 				Logging.logException(e);
 			}
 		}
 	}
-	
+
 	protected void onMessagePauseMode(BotContext ctx) {
 		for(CommandHandler handler : handlers.values()) {
 			if(!(handler instanceof AdminHandler))
 				continue;
-			
+
 			try {
 				handler.handle(ctx);
 			} catch (Exception e) {
@@ -115,11 +116,11 @@ public class BotLogic {
 			}
 		}
 	}
-	
+
 	public void onJoin(BotContext ctx) {
 		if(ctx.isPaused())
 			return;
-		
+
 		for(IrcEventHandler handler : eventHandlers.values()) {
 			try {
 				handler.onJoin(ctx.sender, ctx);
@@ -128,13 +129,13 @@ public class BotLogic {
 			}
 		}
 	}
-	
+
 	private void onHelp(BotContext ctx, String topic) {
-		
+
 		if(handlers.containsKey(topic)) {
 			handlers.get(topic).help(ctx);
 		} else {
-			
+
 			ctx.reply("Here are known handlers: ");
 			StringBuilder sb = new StringBuilder();
 			for(CommandHandler handler : handlers.values()) {
@@ -144,16 +145,16 @@ public class BotLogic {
 			ctx.reply("Send +help <handler> to get more info on a particular one.");
 		}
 	}
-	
+
 	public UserData getUserData(String user) {
 		return userDb.getOrCreateUserData(user);
 	}
-	
+
 	public Boolean toggleHandler(String handlerName) {
 		CommandHandler handler = handlers.get(handlerName);
 		if(handler == null)
 			return null;
-		
+
 		if(disabled.contains(handler)) {
 			disabled.remove(handler);
 			return true;
@@ -162,5 +163,5 @@ public class BotLogic {
 			return false;
 		}
 	}
-	
+
 }

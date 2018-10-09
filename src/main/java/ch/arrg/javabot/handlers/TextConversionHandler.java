@@ -10,6 +10,7 @@ import ch.arrg.javabot.util.CommandMatcher;
 public class TextConversionHandler implements CommandHandler {
 	public static enum Mode {
 		FULLWIDTH(TextConversionHandler::toFullwidth),
+		THICC(TextConversionHandler::toThicc),
 		FLAGLETTERS(TextConversionHandler::toFlagLetters);
 		
 		private Function<String, String> convFun;
@@ -57,6 +58,20 @@ public class TextConversionHandler implements CommandHandler {
 		ctx.reply("Convert text to different formats : +text <format> <text>.");
 		ctx.reply("Supported formats: fullwidth, flagletters.");
 	}
+
+	/** Returns the index (0 to 25) of a letter (a-z, case insensitive) in the
+	 * alphabet.
+	 * If the argument is not a letter, then -1 is returned. */
+	private static int azToIndex(char c) {
+		int d = -1;
+		if(c >= 'a' && c <= 'z') {
+			d = c - 'a';
+		} else if(c >= 'A' && c <= 'Z') {
+			d = c - 'A';
+		}
+		
+		return d;
+	}
 	
 	private static String toFullwidth(String text) {
 		char firstFull = '！';
@@ -64,7 +79,6 @@ public class TextConversionHandler implements CommandHandler {
 		char firstIn = '!';
 		char lastIn = 'z';
 		
-		// TODO performance is bad
 		char out = firstFull;
 		for(char in = firstIn; in <= lastIn; in++) {
 			text = text.replaceAll(Pattern.quote(in + ""), out + "");
@@ -78,20 +92,41 @@ public class TextConversionHandler implements CommandHandler {
 	private static String toFlagLetters(String text) {
 		String flagA = "🇦";
 		
-		// TODO performance is bad
 		StringBuilder sb = new StringBuilder();
 		char[] chars = text.toCharArray();
 		for(int i = 0; i < chars.length; i++) {
 			char c = chars[i];
-			int d = -1;
-			if(c >= 'a' && c <= 'z') {
-				d = c - 'a';
-			} else if(c >= 'A' && c <= 'Z') {
-				d = c - 'A';
-			}
+			int d = azToIndex(c);
 			
 			if(d >= 0) {
 				sb = sb.append(flagA.charAt(0)).append((char) (flagA.charAt(1) + d));
+			} else {
+				sb = sb.append(c);
+			}
+		}
+		
+		return sb.toString();
+	}
+	
+	private static String toThicc(String text) {
+		char[] in = { '卂', '乃', '匚', '刀', '乇', '下', '厶', '卄', '工', '丁', '长', '乚', '从', 'N', '口', '尸', '㔿', '尺', '丂',
+				'丅', '凵', 'リ', '山', '乂', '丫', '乙' };
+		
+		StringBuilder sb = new StringBuilder();
+		char[] chars = text.toCharArray();
+		for(int i = 0; i < chars.length; i++) {
+			char c = chars[i];
+			int d = azToIndex(c);
+			
+			if(d >= 0) {
+				char newChar = in[d];
+				if(newChar == 'N') {
+					// N is a special case because it can't be represented as a
+					// single char
+					sb = sb.append("𠘨");
+				} else {
+					sb = sb.append(newChar);
+				}
 			} else {
 				sb = sb.append(c);
 			}

@@ -12,27 +12,30 @@ import ch.arrg.javabot.util.Logging;
 /** Factory to instantiate handlers based on Fully Qualified Class Names (or
  * files containing them). */
 public class HandlerFactory {
-
+	
 	static List<CommandHandler> createHandlersFromFile(String path) throws IOException {
 		List<CommandHandler> handlers = new ArrayList<CommandHandler>();
-
+		
 		List<String> classNames = FileUtils.readLines(new File(path));
 		Logging.log("Instantiating " + classNames.size() + " handlers from " + path + ".");
 		for(String className : classNames) {
 			CommandHandler handler = createHandler(className);
 			handlers.add(handler);
 		}
-
+		
 		return handlers;
 	}
-
+	
+	// TODO make this able to add the class in the classpath at runtime
+	// See e.g.
+	// https://stackoverflow.com/questions/60764/how-should-i-load-jars-dynamically-at-runtime
 	static CommandHandler createHandler(String className) {
 		try {
 			Class<?> clazz = Class.forName(className);
 			Object newInstance = clazz.newInstance();
 			CommandHandler commandHandler = (CommandHandler) newInstance;
 			return commandHandler;
-
+			
 		} catch (ClassNotFoundException e) {
 			Logging.log("Couldn't not instantiate " + className + ": class not found.");
 			Logging.logException(e);
@@ -43,8 +46,8 @@ public class HandlerFactory {
 			Logging.log("Couldn't not instantiate " + className + ": it's not an instance of CommandHandler.");
 			Logging.logException(e);
 		}
-
+		
 		return null;
 	}
-
+	
 }

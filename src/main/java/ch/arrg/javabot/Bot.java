@@ -4,7 +4,7 @@ import ch.arrg.javabot.data.UserData;
 
 /** This is the interface seeb by handlers to interact with the IRC server. Only
  * a small set of operations are available.
- * 
+ *
  * @author tgi */
 public interface Bot {
 	
@@ -12,13 +12,5 @@ public interface Bot {
 	
 	public UserData getUserData(String user);
 	
-	public void quit();
-	
-	public void adminPause();
-	
-	public void adminUnpause();
-	
-	public boolean isPaused();
-	
-	public Boolean toggleHandler(String handlerName);
+	public BotAdmin admin();
 }

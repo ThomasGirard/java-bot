@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
 import ch.arrg.javabot.Bot;
+import ch.arrg.javabot.BotAdmin;
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserData;
@@ -38,6 +39,14 @@ public class CliTest {
 		public UserData getUserData(String user) {
 			return db.getOrCreateUserData(user);
 		}
+
+		@Override
+		public BotAdmin admin() {
+			return new FakeBotAdmin();
+		}
+	}
+	
+	static class FakeBotAdmin implements BotAdmin {
 		
 		@Override
 		public void quit() {
@@ -45,23 +54,28 @@ public class CliTest {
 		}
 		
 		@Override
-		public void adminPause() {
+		public void pauseBot() {
 			// e
 		}
 		
 		@Override
-		public void adminUnpause() {
+		public void unpauseBot() {
 			// e
 		}
 		
 		@Override
-		public boolean isPaused() {
+		public boolean isBotPaused() {
 			return false;
 		}
 		
 		@Override
 		public Boolean toggleHandler(String handlerName) {
 			return null;
+		}
+
+		@Override
+		public boolean createHandler(String handlerName) {
+			return false;
 		}
 	}
 }

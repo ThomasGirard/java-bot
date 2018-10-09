@@ -1,11 +1,12 @@
 package ch.arrg.javabot.data;
 
 import ch.arrg.javabot.Bot;
+import ch.arrg.javabot.BotAdmin;
 
 public class BotContext implements Bot {
 
 	// TODO pass UserDb (and Database service ?) here, so that there's no magic
-		// to accessing them
+	// to accessing them
 
 	private final Bot bot;
 	public final String channel;
@@ -39,9 +40,8 @@ public class BotContext implements Bot {
 		return bot.getUserData(user);
 	}
 
-	@Override
-	public void quit() {
-		bot.quit();
+	public BotAdmin admin() {
+		return bot.admin();
 	}
 
 	public String getRecordStr(String recordName) {
@@ -55,22 +55,4 @@ public class BotContext implements Bot {
 	public void setRecord(String key, Object value) {
 		bot.getUserData(sender).setRecord(key, value);
 	}
-
-	public void adminPause() {
-		bot.adminPause();
-	}
-
-	public void adminUnpause() {
-		bot.adminUnpause();
-	}
-
-	@Override
-	public boolean isPaused() {
-		return bot.isPaused();
-	}
-
-	public Boolean toggleHandler(String handlerName) {
-		return bot.toggleHandler(handlerName);
-	}
-
 }

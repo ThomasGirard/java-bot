@@ -16,11 +16,11 @@ import ch.arrg.javabot.util.HandlerUtils;
 import ch.arrg.javabot.util.Logging;
 
 public class RemindMeHandler implements CommandHandler {
-	
+
 	private static final String DATA_KEY = "RemindMeHandler";
-	
+
 	Pattern DATE_PATTERN = Pattern.compile("((\\d+)d)?((\\d+)h)?((\\d+)m)?((\\d+)s)?");
-	
+
 	@Override
 	public void handle(BotContext ctx) {
 		CommandMatcher matcher = CommandMatcher.make("+remindme");
@@ -33,43 +33,43 @@ public class RemindMeHandler implements CommandHandler {
 			}
 			RemindMeReminder reminder = new RemindMeReminder(ctx.sender, targetDate, dateRaw, matcher.remaining());
 			storeReminder(ctx, reminder);
-			
+
 			String dateFormatted = HandlerUtils.prettyDate(targetDate);
 			ctx.reply("Ok I'll remind you on " + dateFormatted + ".");
 		}
-		
+
 		checkReminders(ctx);
 	}
-	
+
 	private void checkReminders(BotContext ctx) {
 		String userCanon = UserDb.canonize(ctx.sender);
-		
+
 		UserData dat = ctx.getUserData(userCanon);
 		List<RemindMeReminder> reminders = dat.getOrInit(DATA_KEY, new ArrayList<RemindMeReminder>());
 		List<RemindMeReminder> toRemove = new ArrayList<>();
 		Date now = new Date();
-		
+
 		for(RemindMeReminder reminder : reminders) {
 			if(reminder.targetDate.before(now)) {
 				showReminder(ctx, reminder);
 				toRemove.add(reminder);
 			}
 		}
-		
+
 		reminders.removeAll(toRemove);
 		dat.setRecord(DATA_KEY, reminders);
 	}
-	
+
 	private void showReminder(BotContext ctx, RemindMeReminder reminder) {
 		ctx.reply("There's a reminder for you from " + reminder.dateRaw + " ago: " + reminder.message + "");
 	}
-	
+
 	int parseIntGroup(Matcher m, int index) {
 		String s = m.group(index);
 		if(s == null) {
 			return 0;
 		}
-		
+
 		try {
 			return Integer.parseInt(s);
 		} catch (NumberFormatException e) {
@@ -77,7 +77,7 @@ public class RemindMeHandler implements CommandHandler {
 			return 0;
 		}
 	}
-	
+
 	private Date parseDate(String raw) {
 		Matcher m = DATE_PATTERN.matcher(raw);
 		if(m.matches()) {
@@ -85,8 +85,8 @@ public class RemindMeHandler implements CommandHandler {
 			int hours = parseIntGroup(m, 4);
 			int minutes = parseIntGroup(m, 6);
 			int seconds = parseIntGroup(m, 8);
-			
-			int totalSeconds = seconds + minutes * 60 + hours * 60 * 60 + days * 24 * 60 * 60;
+
+			long totalSeconds = seconds + minutes * 60 + hours * 60 * 60 + days * 24 * 60 * 60;
 			long millis = new Date().getTime() + totalSeconds * 1000;
 			Date targetDate = new Date(millis);
 			return targetDate;
@@ -95,24 +95,24 @@ public class RemindMeHandler implements CommandHandler {
 			return null;
 		}
 	}
-	
+
 	private static void storeReminder(BotContext ctx, RemindMeReminder reminder) {
 		String userCanon = UserDb.canonize(reminder.user);
-		
+
 		UserData dat = ctx.getUserData(userCanon);
 		List<RemindMeReminder> reminders = dat.getOrInit(DATA_KEY, new ArrayList<RemindMeReminder>());
-		
+
 		reminders.add(reminder);
-		
+
 		dat.setRecord(DATA_KEY, reminders);
 	}
-	
+
 	static class RemindMeReminder implements Serializable {
 		private final String user;
 		private final Date targetDate;
 		private final String dateRaw;
 		private final String message;
-		
+
 		public RemindMeReminder(String user, Date targetDate, String dateRaw, String message) {
 			super();
 			this.user = user;
@@ -121,12 +121,12 @@ public class RemindMeHandler implements CommandHandler {
 			this.message = message;
 		}
 	}
-	
+
 	@Override
 	public String getName() {
 		return "+remindme";
 	}
-	
+
 	@Override
 	public void help(BotContext ctx) {
 		ctx.reply("Store a message for later.");

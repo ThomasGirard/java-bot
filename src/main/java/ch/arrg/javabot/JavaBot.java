@@ -12,7 +12,7 @@ public class JavaBot {
 	public static void main(String[] args) throws Exception {
 		String configPath = "data/config.properties";
 		Const.init(configPath);
-
+		
 		DatabaseLogServiceProvider.init();
 		
 		new BotImpl().start();

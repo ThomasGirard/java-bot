@@ -28,9 +28,8 @@ public class CommandMatcher {
 		return matches;
 	}
 
-	public static CommandMatcher make(String... items) {
-		String line = Joiner.on(" ").join(items);
-		return new CommandMatcher(line);
+	public static CommandMatcher make(String pattern) {
+		return new CommandMatcher(pattern);
 	}
 
 	public String nextWord() {
@@ -42,7 +41,7 @@ public class CommandMatcher {
 
 		return "";
 	}
-	
+
 	/** Moves the pointer back 1 word (same as if the previous call to nextWord
 	 * hadn't happened. */
 	public void popWord() {
@@ -54,7 +53,7 @@ public class CommandMatcher {
 		String[] remainingWords = Arrays.copyOfRange(split, splitIdx, split.length);
 		return Joiner.on(' ').join(remainingWords);
 	}
-	
+
 	public String peekWord() {
 		if(splitIdx < split.length) {
 			String word = split[splitIdx];

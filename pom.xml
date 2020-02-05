@@ -5,12 +5,31 @@
 	<artifactId>java-bot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>java-bot</name>
+	<repositories>
+		<repository>
+		    <id>jcenter</id>
+		    <name>jcenter-bintray</name>
+		    <url>https://jcenter.bintray.com</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>pircbot</groupId>
 			<artifactId>pircbot</artifactId>
 			<version>1.5.0</version>
 		</dependency>
+		<dependency>
+		    <groupId>net.dv8tion</groupId>
+		    <artifactId>JDA</artifactId>
+		    <version>4.0.0_45</version>
+	        <exclusions>
+		        <exclusion>
+		            <groupId>club.minnced</groupId>
+		            <artifactId>opus-java</artifactId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
+
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
@@ -31,10 +50,16 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.5</version>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.38</version>
+		</dependency> -->
+		<dependency> 
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>2.4.4</version>
 		</dependency>
 
 		<!-- Handler specific -->
@@ -51,11 +76,12 @@
 			<version>4.2</version>
 		</dependency> -->  
 		<!-- Trello -->
+		<!--  (disabled bc of conflict with JDA)
 		<dependency>
 		    <groupId>com.julienvey.trello</groupId>
 		    <artifactId>trello-java-wrapper</artifactId>
 		    <version>0.3.2</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>

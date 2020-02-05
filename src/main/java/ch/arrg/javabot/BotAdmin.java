@@ -5,16 +5,14 @@ package ch.arrg.javabot;
  *
  * @author tgi */
 public interface BotAdmin {
-	
+
 	public void quit();
-	
+
 	public void pauseBot();
-	
+
 	public void unpauseBot();
-	
-	public boolean isBotPaused();
-	
+
 	public Boolean toggleHandler(String handlerName);
-	
+
 	public boolean createHandler(String handlerName);
 }

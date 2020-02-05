@@ -21,7 +21,7 @@ public class CliTest {
 					break;
 				}
 				
-				BotContext ctx = new BotContext(bot, "##braisnchat", "arrg_ch", "arrg", "hostname", line);
+				BotContext ctx = new BotContext(bot, "##braisnchat", "arrg_ch", line);
 				ch.handle(ctx);
 			}
 		}
@@ -61,11 +61,6 @@ public class CliTest {
 		@Override
 		public void unpauseBot() {
 			// e
-		}
-		
-		@Override
-		public boolean isBotPaused() {
-			return false;
 		}
 		
 		@Override

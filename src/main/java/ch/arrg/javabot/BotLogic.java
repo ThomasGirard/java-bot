@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.google.common.collect.Lists;
+
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.DataStoreUtils;
 import ch.arrg.javabot.data.UserData;
@@ -27,6 +29,10 @@ public class BotLogic {
 	private Map<String, CommandHandler> handlers = new TreeMap<>();
 	private Set<CommandHandler> disabled = new HashSet<>();
 	private Map<String, IrcEventHandler> eventHandlers = new TreeMap<>();
+	
+	private List<String> ignoredUsers = Lists.newArrayList(Const.strArray("bot.ignoredUsers"));
+	
+	boolean isPaused = false;
 	
 	private final UserDb userDb;
 	
@@ -64,7 +70,12 @@ public class BotLogic {
 	}
 	
 	protected void onMessage(BotContext ctx) {
-		if(ctx.admin().isBotPaused()) {
+		
+		if(ignoredUsers.contains(ctx.sender)) {
+			return;
+		}
+		
+		if(isPaused) {
 			onMessagePauseMode(ctx);
 			return;
 		}
@@ -107,7 +118,7 @@ public class BotLogic {
 	}
 	
 	public void onJoin(BotContext ctx) {
-		if(ctx.admin().isBotPaused())
+		if(isPaused)
 			return;
 		
 		for(IrcEventHandler handler : eventHandlers.values()) {
@@ -126,7 +137,7 @@ public class BotLogic {
 			return;
 		}
 		
-		if(topic.charAt(0) != '+') {
+		if(topic.length() > 0 && topic.charAt(0) != '+') {
 			String topicPlus = "+" + topic;
 			if(handlers.containsKey(topicPlus)) {
 				handlers.get(topicPlus).help(ctx);

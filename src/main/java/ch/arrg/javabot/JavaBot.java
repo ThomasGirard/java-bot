@@ -15,6 +15,6 @@ public class JavaBot {
 		
 		DatabaseLogServiceProvider.init();
 		
-		new BotImpl().start();
+		new BotIOManager().start();
 	}
 }

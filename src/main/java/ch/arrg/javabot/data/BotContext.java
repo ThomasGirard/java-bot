@@ -11,16 +11,12 @@ public class BotContext implements Bot {
 	private final Bot bot;
 	public final String channel;
 	public final String sender;
-	public final String login;
-	public final String hostname;
 	public final String message;
-
-	public BotContext(Bot bot, String channel, String sender, String login, String hostname, String message) {
+	
+	public BotContext(Bot bot, String channel, String sender, String message) {
 		this.bot = bot;
 		this.channel = channel;
 		this.sender = sender;
-		this.login = login;
-		this.hostname = hostname;
 		this.message = message;
 	}
 
